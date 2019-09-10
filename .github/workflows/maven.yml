@@ -17,8 +17,7 @@ jobs:
       run: mvn package --file pom.xml
     - name: Build Docker Image
       run: ls -lR
-    - run: cp target/pincette-jes-http-*-jar-with-dependencies.jar api.jar
-    - run: cp target/pincette-jes-http-*-jar-with-dependencies.jar ~/api.jar
+    - run: cp target/pincette-jes-http-*-jar-with-dependencies.jar app.jar
     - run: pwd && ls -la
     - run: docker build -t lemonade/pincette-jes-http .
 
