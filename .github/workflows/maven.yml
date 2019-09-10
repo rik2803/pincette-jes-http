@@ -15,11 +15,14 @@ jobs:
         java-version: 1.8
     - name: Build with Maven
       run: mvn package --file pom.xml
-    - name: Build Docker Image
-      run: ls -lR
-    - run: cp target/pincette-jes-http-*-jar-with-dependencies.jar app.jar
+    - name: Copy jar to cwd
+      run: cp target/pincette-jes-http-*-jar-with-dependencies.jar app.jar
     - run: pwd && ls -la
-    - run: docker build -t lemonade/pincette-jes-http .
+    - name: Docke build
+      env:
+        AWS_ACCOUNTID_TARGET: ${{ secrets.AWS_ACCOUNTID_TARGET }}
+        AWS_REGION: eu-central-1
+      run: docker build -t ${AWS_ACCOUNTID_TARGET}.dkr.ecr.${AWS_REGION:-eu-central-1}.amazonaws.com/lemonade/pincette-jes-http .
     - name: AWS ECR Login
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
