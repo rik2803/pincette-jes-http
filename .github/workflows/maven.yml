@@ -20,6 +20,14 @@ jobs:
     - run: cp target/pincette-jes-http-*-jar-with-dependencies.jar app.jar
     - run: pwd && ls -la
     - run: docker build -t lemonade/pincette-jes-http .
+    - name: AWS ECR Login
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: eu-central-1
+      run: eval $(aws ecr get-login --no-include-email --region ${AWS_REGION:-eu-central-1})
+    - name: Push
+      run: docker push lemonade/pincette-jes-http
 
   deploy:
     needs: [build]
