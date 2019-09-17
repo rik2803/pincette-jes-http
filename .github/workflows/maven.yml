@@ -47,7 +47,7 @@ jobs:
     
     steps:
     - name: Create private key file ~/.ssh/id_rsa
-      run: mkdir ~/.ssh && chmod 0700 ~/.ssh && printf -- "${SSH_PRIVATE_KEY}\n" > ~/.ssh/id-rsa && chmod 0600 ~/.ssh/id-rsa
+      run: mkdir ~/.ssh && chmod 0700 ~/.ssh && printf -- "${SSH_PRIVATE_KEY}" > ~/.ssh/id-rsa && chmod 0600 ~/.ssh/id-rsa
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: Config git
@@ -55,7 +55,7 @@ jobs:
     - name: Load bitbucket.org host keys
       run: ssh-keyscan bitbucket.org >> ~/.ssh/known_hosts && chmod 0600 ~/.ssh/known_hosts && ls -lR ~/.ssh && cat ~/.ssh/id-rsa
     - name: Check what git user is being used
-      run: ssh git@bitbucket.org
+      run: ssh -vv git@bitbucket.org
     - name: Checkout config repo
       run: rm -rf remote_repo && git clone git@bitbucket.org:lemonade-git/pincette-jes-http.config.tst.git remote_repo
     - name: Create the TAG file
