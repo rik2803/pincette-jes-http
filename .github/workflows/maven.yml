@@ -47,13 +47,13 @@ jobs:
     
     steps:
     - name: Create private key file ~/.ssh/id_rsa
-      run: mkdir ~/.ssh && chmod 0700 ~/.ssh && echo ${SSH_PRIVATE_KEY} > ~/.ssh/id-rsa && chmod 0600 ~/.ssh/id-rsa
+      run: mkdir ~/.ssh && chmod 0700 ~/.ssh && echo ${SSH_PRIVATE_KEY} > ~/.ssh/id-rsa && echo >> ~/.ssh/id-rsa && chmod 0600 ~/.ssh/id-rsa
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: Config git
       run: git config --global user.email "bitbucketpipeline@wherever.com" && git config --global user.name "Bitbucket Pipeline"
     - name: Load bitbucket.org host keys
-      run: ssh-keyscan bitbucket.org >> ~/.ssh/known_hosts && chmod 0600 ~/.ssh/known_hosts
+      run: ssh-keyscan bitbucket.org >> ~/.ssh/known_hosts && chmod 0600 ~/.ssh/known_hosts && ls -lR ~/.ssh && cat ~/.ssh/id-rsa
     - name: Check what git user is being used
       run: ssh git@bitbucket.org
     - name: Checkout config repo
