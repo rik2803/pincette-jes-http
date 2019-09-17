@@ -52,6 +52,8 @@ jobs:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: Config git
       run: git config --global user.email "bitbucketpipeline@wherever.com" && git config --global user.name "Bitbucket Pipeline"
+    - name: Load bitbucket.org host keys
+      run: ssh-keyscan bitbucket.org >> ~/.ssh/known_hosts && chmod 0600 ~/.ssh/known_hosts
     - name: Check what git user is being used
       run: ssh git@bitbucket.org
     - name: Checkout config repo
