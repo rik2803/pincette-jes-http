@@ -59,5 +59,5 @@ jobs:
     - name: Checkout config repo
       run: rm -rf remote_repo && git clone git@bitbucket.org:lemonade-git/pincette-jes-http.config.tst.git remote_repo
     - name: Create the TAG file
-      run: cd remote_repo && echo "${GITHUB_SHA}" > TAG && git add TAG && git commit --allow-empty "Update TAG with source repo commit hash" && git push 
+      run: cd remote_repo && echo "${GITHUB_SHA}" > TAG && git add TAG && git commit --allow-empty -m "Update TAG with source repo commit hash" && git push 
 
