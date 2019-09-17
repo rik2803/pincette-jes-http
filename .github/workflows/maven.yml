@@ -41,12 +41,21 @@ jobs:
         AWS_REGION: eu-central-1
       run: docker push ${AWS_ACCOUNTID_TARGET}.dkr.ecr.${AWS_REGION:-eu-central-1}.amazonaws.com/lemonade/pincette-jes-http
 
-  deploy:
+  prepare-nonprod-config-repo:
     needs: [build]
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v1
-    
-    - name: Deploy Artefact Container image to ECR
-      run: echo "Placeholder"
+    - name: Create private key file ~/.ssh/id_rsa
+      run: mkdir ~/.ssh && chmod 0700 /~/.ssh && echo ${SSH_PRIVATE_KEY} > ~/.ssh/id-rsa && chmod 0600 ~/.ssh/id-rsa
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+    - name: Config git
+      run: git config --global user.email "bitbucketpipeline@wherever.com" && git config --global user.name "Bitbucket Pipeline"
+    - name: Check what git user is being used
+      run: ssh git@bitbucket.org
+    - name: Checkout config repo
+      run: rm -rf remote_repo && git clone git@bitbucket.org:lemonade-git/pincette-jes-http.config.tst.git remote_repo
+    - name: Create the TAG file
+      run: cd remote_repo && echo "${GITHUB_SHA}" > TAG && git add TAG && git commit --allow-empty "Update TAG with source repo commit hash" && git push 
+
