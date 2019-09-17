@@ -30,16 +30,26 @@ jobs:
         AWS_ACCOUNTID_TARGET: ${{ secrets.AWS_ACCOUNTID_TARGET }}
         AWS_REGION: eu-central-1
       run: eval $(aws ecr get-login --no-include-email --region ${AWS_REGION:-eu-central-1})
-    - name: Tag image
+    - name: Tag image with latest
       env:
         AWS_ACCOUNTID_TARGET: ${{ secrets.AWS_ACCOUNTID_TARGET }}
         AWS_REGION: eu-central-1
       run: docker tag ${AWS_ACCOUNTID_TARGET}.dkr.ecr.${AWS_REGION:-eu-central-1}.amazonaws.com/lemonade/pincette-jes-http ${AWS_ACCOUNTID_TARGET}.dkr.ecr.${AWS_REGION:-eu-central-1}.amazonaws.com/lemonade/pincette-jes-http:latest
-    - name: Push
+    - name: Tag image with ${GITHUB_SHA}
       env:
         AWS_ACCOUNTID_TARGET: ${{ secrets.AWS_ACCOUNTID_TARGET }}
         AWS_REGION: eu-central-1
-      run: docker push ${AWS_ACCOUNTID_TARGET}.dkr.ecr.${AWS_REGION:-eu-central-1}.amazonaws.com/lemonade/pincette-jes-http
+      run: docker tag ${AWS_ACCOUNTID_TARGET}.dkr.ecr.${AWS_REGION:-eu-central-1}.amazonaws.com/lemonade/pincette-jes-http ${AWS_ACCOUNTID_TARGET}.dkr.ecr.${AWS_REGION:-eu-central-1}.amazonaws.com/lemonade/pincette-jes-http:${GITHUB_SHA}
+    - name: Push image with latest tag
+      env:
+        AWS_ACCOUNTID_TARGET: ${{ secrets.AWS_ACCOUNTID_TARGET }}
+        AWS_REGION: eu-central-1
+      run: docker push ${AWS_ACCOUNTID_TARGET}.dkr.ecr.${AWS_REGION:-eu-central-1}.amazonaws.com/lemonade/pincette-jes-http:latest
+    - name: Push image with ${GITHUB_SHA} tag
+      env:
+        AWS_ACCOUNTID_TARGET: ${{ secrets.AWS_ACCOUNTID_TARGET }}
+        AWS_REGION: eu-central-1
+      run: docker push ${AWS_ACCOUNTID_TARGET}.dkr.ecr.${AWS_REGION:-eu-central-1}.amazonaws.com/lemonade/pincette-jes-http:${GITHUB_SHA}
 
   prepare-nonprod-config-repo:
     needs: [build]
