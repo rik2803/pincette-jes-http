@@ -47,7 +47,7 @@ jobs:
     
     steps:
     - name: Create private key file ~/.ssh/id_rsa
-      run: mkdir ~/.ssh && chmod 0700 ~/.ssh && printf -- "${SSH_PRIVATE_KEY}" > ~/.ssh/id-rsa && chmod 0600 ~/.ssh/id-rsa
+      run: mkdir ~/.ssh && chmod 0700 ~/.ssh && printf -- "${SSH_PRIVATE_KEY}" > ~/.ssh/id_rsa && chmod 0600 ~/.ssh/id_rsa
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: Config git
