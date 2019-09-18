@@ -11,4 +11,4 @@ LABEL Maintainer="info@lemonade.be"
 LABEL Commithash=@env.BITBUCKET_REPO_SLUG@
 LABEL RepoURL=@env.BITBUCKET_COMMIT@
 
-ENTRYPOINT [ "java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/app.jar"]
+ENTRYPOINT [ "java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/app.jar", "9000"]
