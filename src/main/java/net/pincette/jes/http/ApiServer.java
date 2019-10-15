@@ -7,9 +7,12 @@ import static java.lang.Integer.parseInt;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.parse;
 import static java.util.logging.Logger.getGlobal;
+import static java.util.logging.Logger.getLogger;
 import static java.util.stream.Collectors.toMap;
 import static javax.json.Json.createReader;
+import static net.pincette.jes.elastic.Logging.log;
 import static net.pincette.jes.util.Configuration.loadDefault;
 import static net.pincette.jes.util.Kafka.fromConfig;
 import static net.pincette.rs.Chain.with;
@@ -31,6 +34,8 @@ import java.net.URI;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.pincette.function.SideEffect;
 import net.pincette.jes.api.Request;
 import net.pincette.jes.api.Response;
@@ -48,6 +53,20 @@ import org.reactivestreams.Publisher;
  * @since 1.0
  */
 public class ApiServer {
+  private static final String AUTHORIZATION_HEADER = "authorizationHeader";
+  private static final String CONTEXT_PATH = "contextPath";
+  private static final String ELASTIC_LOG = "elastic.log";
+  private static final String ENVIRONMENT = "environment";
+  private static final String FANOUT_SECRET = "fanout.secret";
+  private static final String FANOUT_URI = "fanout.uri";
+  private static final String JWT_PUBLIC_KEY = "jwtPublicKey";
+  private static final String KAFKA = "kafka";
+  private static final String LEVEL = "level";
+  private static final String LOG_LEVEL = "logLevel";
+  private static final String MONGODB_DATABASE = "mongodb.database";
+  private static final String MONGODB_URI = "mongodb.uri";
+  private static final String URI = "uri";
+
   private static void copyHeaders(final Response r1, final HttpResponse r2) {
     if (r1.headers != null) {
       r1.headers.forEach((k, v) -> r2.headers().add(k, list(v)));
@@ -56,23 +75,28 @@ public class ApiServer {
 
   public static void main(final String[] args) {
     final Config config = loadDefault();
-    final String environment =
-        config.hasPath("environment") ? config.getString("environment") : "dev";
+    final String environment = config.hasPath(ENVIRONMENT) ? config.getString(ENVIRONMENT) : "dev";
+    final Level logLevel = parse(tryToGetSilent(() -> config.getString(LOG_LEVEL)).orElse("INFO"));
+    final Logger logger = getLogger("pincette-jes-http");
+
+    logger.setLevel(logLevel);
+    tryToGetSilent(() -> config.getConfig(ELASTIC_LOG))
+        .ifPresent(c -> log(logger, logLevel, c.getString(URI), c.getString(AUTHORIZATION_HEADER)));
 
     tryToDoWithRethrow(
         () ->
             new Server()
-                .withContextPath(
-                    config.hasPath("contextPath") ? config.getString("contextPath") : "")
+                .withContextPath(config.hasPath(CONTEXT_PATH) ? config.getString(CONTEXT_PATH) : "")
                 .withEnvironment(environment)
                 .withAudit("audit-" + environment)
                 .withBreakingTheGlass()
-                .withJwtPublicKey(config.getString("jwtPublicKey"))
-                .withKafkaConfig(fromConfig(config, "kafka"))
-                .withMongoUri(config.getString("mongodb.uri"))
-                .withMongoDatabase(config.getString("mongodb.database"))
-                .withFanoutUri(config.getString("fanout.uri"))
-                .withFanoutSecret(config.getString("fanout.secret")),
+                .withJwtPublicKey(config.getString(JWT_PUBLIC_KEY))
+                .withKafkaConfig(fromConfig(config, KAFKA))
+                .withMongoUri(config.getString(MONGODB_URI))
+                .withMongoDatabase(config.getString(MONGODB_DATABASE))
+                .withFanoutUri(config.getString(FANOUT_URI))
+                .withFanoutSecret(config.getString(FANOUT_SECRET))
+                .withLogger(logger),
         server ->
             tryToDoWithRethrow(
                 () ->

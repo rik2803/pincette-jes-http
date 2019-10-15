@@ -6,7 +6,7 @@
 
   <groupId>net.pincette</groupId>
   <artifactId>pincette-jes-http</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
   <name>pincette-jes-http</name>
   <description>HTTP Server For JSON Event Sourcing</description>
   <url>https://github.com/wdonne/pincette-jes-http</url>
@@ -51,12 +51,12 @@
     <dependency>
       <groupId>net.pincette</groupId>
       <artifactId>pincette-common</artifactId>
-      <version>1.5.8</version>
+      <version>1.6.3</version>
     </dependency>
     <dependency>
       <groupId>net.pincette</groupId>
       <artifactId>pincette-jes-api</artifactId>
-      <version>1.0.2</version>
+      <version>1.0.3</version>
     </dependency>
     <dependency>
       <groupId>net.pincette</groupId>
@@ -66,7 +66,12 @@
     <dependency>
       <groupId>net.pincette</groupId>
       <artifactId>pincette-jes-util</artifactId>
-      <version>1.0.1</version>
+      <version>1.0.2</version>
+    </dependency>
+    <dependency>
+      <groupId>net.pincette</groupId>
+      <artifactId>pincette-jes-elastic</artifactId>
+      <version>1.0</version>
     </dependency>
     <dependency>
       <groupId>org.reactivestreams</groupId>

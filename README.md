@@ -17,11 +17,14 @@ The configuration is managed by the [Lightbend Config package](https://github.co
 |Entry|Description|
 |---|---|
 |contextPath|The URL path prefix, e.g. "/api".|
+|elastic.log.authorizationHeader|The value for the HTTP Authorization header, which uses the basic realm.|
+|elastic.log.uri|The URI for upload of an Elasticsearch index. Its path would be ```/<index_name>/_doc```. The index "log" is currently used.|
 |environment|The name of the environment, which will be used as a suffix for the aggregates, e.g. "tst", "acc", etc.|
 |fanout.uri|The URL of the [fanout.io](https://fanout.io) service.|
 |fanout.secret|The secret with which the usernames are encrypted during the Server-Sent Events set-up.|
 |jwtPublicKey|The public key string, which is used to validate all JSON Web Tokens.|
 |kafka|All Kafka settings come below this entry. So for example, the setting ```bootstrap.servers``` would go to the entry ```kafka.bootstrap.servers```.|
+|logLevel|The log level as defined in [java.util.logging.Level](https://docs.oracle.com/javase/8/docs/api/java/util/logging/Level.html).|
 |mongodb.uri|The URI of the MongoDB service.|
 |mongodb.database|The name of the MongoDB database.|
 
