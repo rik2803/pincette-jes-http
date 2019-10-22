@@ -6,6 +6,8 @@ The read-side is handled with [MongoDB](https://www.mongodb.com). You can fetch,
 
 The supported paths and methods are explained in the repository [pincette-jes-api](https://github.com/wdonne/pincette-jes-api).
 
+One special path is ```<contextPath>/health```, which just returns status code 200 (OK). This can be used for health checks.
+
 ## Authentication
 
 All requests should have a [JSON Web Token](https://jwt.io), which may appear as a bearer token in the ```Authotrization``` header, the cookie named ```access_token``` or the URL parameter named ```access_token```. The configuration should have the public key with which the tokens can be validated.
