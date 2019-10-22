@@ -1,7 +1,9 @@
 package net.pincette.jes.http;
 
+import static io.netty.handler.codec.http.HttpMethod.GET;
 import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
 import static io.netty.handler.codec.http.HttpResponseStatus.INTERNAL_SERVER_ERROR;
+import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpResponseStatus.valueOf;
 import static java.lang.Integer.parseInt;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -65,7 +67,7 @@ public class ApiServer {
   private static final String LOG_LEVEL = "logLevel";
   private static final String MONGODB_DATABASE = "mongodb.database";
   private static final String MONGODB_URI = "mongodb.uri";
-  private static final String URI = "uri";
+  private static final String URI_FIELD = "uri";
 
   private static void copyHeaders(final Response r1, final HttpResponse r2) {
     if (r1.headers != null) {
@@ -73,20 +75,40 @@ public class ApiServer {
     }
   }
 
+  private static CompletionStage<Publisher<ByteBuf>> health(
+      final HttpRequest req, final HttpResponse resp) {
+    resp.setStatus(OK);
+
+    return completedFuture(empty());
+  }
+
+  private static boolean isHealthCheck(final HttpRequest req, final String contextPath) {
+    return req.method().equals(GET) && isHealthCheckPath(req, contextPath);
+  }
+
+  private static boolean isHealthCheckPath(final HttpRequest req, final String contextPath) {
+    return tryToGetRethrow(() -> new URI(req.uri()))
+        .map(URI::getPath)
+        .map(path -> path.equals(contextPath + "/health"))
+        .orElse(false);
+  }
+
   public static void main(final String[] args) {
     final Config config = loadDefault();
+    final String contextPath = config.hasPath(CONTEXT_PATH) ? config.getString(CONTEXT_PATH) : "";
     final String environment = config.hasPath(ENVIRONMENT) ? config.getString(ENVIRONMENT) : "dev";
     final Level logLevel = parse(tryToGetSilent(() -> config.getString(LOG_LEVEL)).orElse("INFO"));
     final Logger logger = getLogger("pincette-jes-http");
 
     logger.setLevel(logLevel);
     tryToGetSilent(() -> config.getConfig(ELASTIC_LOG))
-        .ifPresent(c -> log(logger, logLevel, c.getString(URI), c.getString(AUTHORIZATION_HEADER)));
+        .ifPresent(
+            c -> log(logger, logLevel, c.getString(URI_FIELD), c.getString(AUTHORIZATION_HEADER)));
 
     tryToDoWithRethrow(
         () ->
             new Server()
-                .withContextPath(config.hasPath(CONTEXT_PATH) ? config.getString(CONTEXT_PATH) : "")
+                .withContextPath(contextPath)
                 .withEnvironment(environment)
                 .withAudit("audit-" + environment)
                 .withBreakingTheGlass()
@@ -103,7 +125,9 @@ public class ApiServer {
                     new HttpServer(
                         parseInt(args[0]),
                         (HttpRequest req, InputStream body, HttpResponse resp) ->
-                            requestHandler(req, body, resp, server)),
+                            isHealthCheck(req, contextPath)
+                                ? health(req, resp)
+                                : requestHandler(req, body, resp, server)),
                 ApiServer::start));
   }
 
