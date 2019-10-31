@@ -68,6 +68,7 @@ public class ApiServer {
   private static final String MONGODB_DATABASE = "mongodb.database";
   private static final String MONGODB_URI = "mongodb.uri";
   private static final String URI_FIELD = "uri";
+  private static final String VERSION = "1.1.1";
 
   private static void copyHeaders(final Response r1, final HttpResponse r2) {
     if (r1.headers != null) {
@@ -103,7 +104,14 @@ public class ApiServer {
     logger.setLevel(logLevel);
     tryToGetSilent(() -> config.getConfig(ELASTIC_LOG))
         .ifPresent(
-            c -> log(logger, logLevel, c.getString(URI_FIELD), c.getString(AUTHORIZATION_HEADER)));
+            c ->
+                log(
+                    logger,
+                    logLevel,
+                    VERSION,
+                    environment,
+                    c.getString(URI_FIELD),
+                    c.getString(AUTHORIZATION_HEADER)));
 
     tryToDoWithRethrow(
         () ->
