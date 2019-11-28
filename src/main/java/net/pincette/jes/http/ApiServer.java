@@ -96,8 +96,8 @@ public class ApiServer {
 
   public static void main(final String[] args) {
     final Config config = loadDefault();
-    final String contextPath = config.hasPath(CONTEXT_PATH) ? config.getString(CONTEXT_PATH) : "";
-    final String environment = config.hasPath(ENVIRONMENT) ? config.getString(ENVIRONMENT) : "dev";
+    final String contextPath = tryToGetSilent(() -> config.getString(CONTEXT_PATH)).orElse("");
+    final String environment = tryToGetSilent(() -> config.getString(ENVIRONMENT)).orElse("dev");
     final Level logLevel = parse(tryToGetSilent(() -> config.getString(LOG_LEVEL)).orElse("INFO"));
     final Logger logger = getLogger("pincette-jes-http");
 
