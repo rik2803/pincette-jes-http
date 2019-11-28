@@ -63,12 +63,11 @@ public class ApiServer {
   private static final String FANOUT_URI = "fanout.uri";
   private static final String JWT_PUBLIC_KEY = "jwtPublicKey";
   private static final String KAFKA = "kafka";
-  private static final String LEVEL = "level";
   private static final String LOG_LEVEL = "logLevel";
   private static final String MONGODB_DATABASE = "mongodb.database";
   private static final String MONGODB_URI = "mongodb.uri";
   private static final String URI_FIELD = "uri";
-  private static final String VERSION = "1.1.1";
+  private static final String VERSION = "1.1.2";
 
   private static void copyHeaders(final Response r1, final HttpResponse r2) {
     if (r1.headers != null) {
@@ -76,8 +75,7 @@ public class ApiServer {
     }
   }
 
-  private static CompletionStage<Publisher<ByteBuf>> health(
-      final HttpRequest req, final HttpResponse resp) {
+  private static CompletionStage<Publisher<ByteBuf>> health(final HttpResponse resp) {
     resp.setStatus(OK);
 
     return completedFuture(empty());
@@ -134,7 +132,7 @@ public class ApiServer {
                         parseInt(args[0]),
                         (HttpRequest req, InputStream body, HttpResponse resp) ->
                             isHealthCheck(req, contextPath)
-                                ? health(req, resp)
+                                ? health(resp)
                                 : requestHandler(req, body, resp, server)),
                 ApiServer::start));
   }
