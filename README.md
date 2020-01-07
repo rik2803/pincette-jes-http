@@ -1,10 +1,13 @@
 # HTTP Server For JSON Event Sourcing
 
-This is a standalone HTTP server for interacting with [JSON aggregates](https://github.com/wdonne/pincette-jes). On the write-side you can send commands, which are handled asynchronously. They are put on a [Kafka](https://kafka.apache.org) command topic, which corresponds to the aggregate type in the [command](https://github.com/wdonne/pincette-jes). This is acknowledged with a 202 HTTP status code (Accepted). Changes to aggregates come back through [Server-Sent Events](https://www.w3.org/TR/eventsource/). This flow fits well with reactive clients.
+This is a standalone HTTP server for interacting with [JSON
+aggregates](https://github.com/json-event-sourcing/pincette-jes). On the write-side you can send
+commands, which are handled asynchronously. They are put on a [Kafka](https://kafka.apache.org)
+command topic, which corresponds to the aggregate type in the [command](https://github.com/json-event-sourcing/pincette-jes). This is acknowledged with a 202 HTTP status code (Accepted). Changes to aggregates come back through [Server-Sent Events](https://www.w3.org/TR/eventsource/). This flow fits well with reactive clients.
 
 The read-side is handled with [MongoDB](https://www.mongodb.com). You can fetch, list and search aggregates.
 
-The supported paths and methods are explained in the repository [pincette-jes-api](https://github.com/wdonne/pincette-jes-api).
+The supported paths and methods are explained in the repository [pincette-jes-api](https://github.com/json-event-sourcing/pincette-jes-api).
 
 One special path is ```<contextPath>/health```, which just returns status code 200 (OK). This can be used for health checks.
 
