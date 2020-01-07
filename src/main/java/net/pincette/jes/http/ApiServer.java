@@ -67,7 +67,7 @@ public class ApiServer {
   private static final String MONGODB_DATABASE = "mongodb.database";
   private static final String MONGODB_URI = "mongodb.uri";
   private static final String URI_FIELD = "uri";
-  private static final String VERSION = "1.1.2";
+  private static final String VERSION = "1.1.3";
 
   private static void copyHeaders(final Response r1, final HttpResponse r2) {
     if (r1.headers != null) {
@@ -100,6 +100,7 @@ public class ApiServer {
     final Logger logger = getLogger("pincette-jes-http");
 
     logger.setLevel(logLevel);
+
     tryToGetSilent(() -> config.getConfig(ELASTIC_LOG))
         .ifPresent(
             c ->
